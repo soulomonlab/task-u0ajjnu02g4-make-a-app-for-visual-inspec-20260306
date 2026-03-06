@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: Visual Inspection Signed URLs API
+  version: '1.0'
+paths:
+  /api/v1/uploads/signed-urls/batch:
+    post:
+      summary: Get batch of signed upload URLs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                files:
+                  type: array
+                  items:
+                    type: object
+                    required: [filename, content_type, size]
+                    properties:
+                      filename:
+                        type: string
+                      content_type:
+                        type: string
+                      size:
+                        type: integer
+                      checksum:
+                        type: string
+                      metadata:
+                        type: object
+              required: [files]
+      responses:
+        '200':
+          description: Signed URLs returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  batch_id:
+                    type: string
+                  expires_in:
+                    type: integer
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        file_id:
+                          type: string
+                        filename:
+                          type: string
+                        upload_url:
+                          type: string
+                        method:
+                          type: string
+                        headers:
+                          type: object
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '413':
+          description: Payload Too Large
+        '429':
+          description: Rate Limit
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
